@@ -1,0 +1,97 @@
+plugins {
+    id 'java'
+    id'jacoco'
+    id "org.sonarqube" version "4.0.0.2929"
+    id 'org.springframework.boot' version '2.6.+'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'org.graalvm.buildtools.native' version '0.9.18'
+}
+
+sonar {
+
+    properties {
+        property "sonar.projectKey", "StudyMate"
+        property "sonar.qualitygate.wait", true
+        property "sonar.coverage.exclusions", "**/lombok/**/*.*"
+
+    }
+
+}
+tasks.named('sonar').configure {
+    dependsOn jacocoTestReport;
+}
+test {
+    jacoco {
+        enabled = true
+    }
+}
+tasks.named('jacocoTestReport') {
+    reports {
+        xml.required = true
+        html.destination = file("$buildDir/customJacocoReportDir")
+        csv.enabled true
+    }
+    dependsOn(test)
+}
+
+group = 'pets.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // implementation 'javax.validation:validation-api:2.0.1.Final'
+    //  implementation 'org.hibernate.validator:hibernate-validator:6.1.5.Final'
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    implementation 'org.glassfish:jakarta.el:3.0.4'
+    implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
+    implementation 'ch.qos.logback:logback-classic:1.2.11'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
+
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+    implementation 'org.modelmapper:modelmapper:2.4.4'
+    implementation 'mysql:mysql-connector-java:8.0.28'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:9.4.1.jre8'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    testImplementation 'junit:junit:4.13.1'
+
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+}
+
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
+test {
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+    useJUnitPlatform()
+}
+
+compileJava {
+    options.compilerArgs += '-Xlint:deprecation'
+}
